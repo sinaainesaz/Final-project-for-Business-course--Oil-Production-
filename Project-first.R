@@ -926,165 +926,62 @@ dw
 BM_USA <- BM(Production$USA, display=T)
 summary(BM_USA)
 coef(BM_USA)
-
-###prediction (out-of-sample)
-pred_bmusa<- predict(BM_USA, newx=c(1:60))
-pred.instusa<- make.instantaneous(pred_bmusa)
-###plot of fitted model 
-plot(Production$USA, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$USA[c(1,10,20,30,40,51,61)])
-lines(pred.instusa, lwd=2, col=2)
-
-predicted_BM_USA <- predict(BM_USA,newx=c(1:60))
-plot(BM_USA)
-pred.instBM_USA<- make.instantaneous(predicted_BM_USA)
 plot.Dimora(BM_USA)
-BM_USA_fitted<- fitted(BM_USA)
-
-###we estimate the model with 50% of the data
-bm_usa50<-BM(Production$USA[1:31],display = T)
-summary(bm_usa50)
-
-pred_bmusa50<- predict(bm_usa50, newx=c(1:50))
-pred.instusa50<- make.instantaneous(pred_bmusa50)
-
-plot(Production$USA, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$USA[c(1,10,20,30,40,51,61)])
-lines(pred.instusa50, lwd=2, col=2)
-
-###we estimate the model with 25% of the data
-bm_usa75<-BM(Production$USA[1:15],display = T)
-summary(bm_usa75)
-
-pred_bmusa75<- predict(bm_usa75, newx=c(1:50))
-pred.instusa75<- make.instantaneous(pred_bmusa75)
-
-###Comparison between models (instantaneous)
-###instantaneous
-plot(Production$USA, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$USA[c(1,10,20,30,40,51,61)])
-lines(pred.instusa75, lwd=2, col=2)
-lines(pred.instusa50, lwd=2, col=3)
-lines(pred.instusa, lwd=2, col=4)
 
 # GBM with 1 exponantial shock #
 GBMe1_USA<- GBM(Production$USA,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$USA, display=FALSE)$Estimate[1,1],
                                                               BM(Production$USA, display=FALSE)$Estimate[2,1],
                                                               BM(Production$USA, display=FALSE)$Estimate[3,1],
-                                                              17,-0.1,0.1))
+                                                              10,0.1,0.1))
 summary(GBMe1_USA)
 coef(GBMe1_USA)
 predicted_BMe1_USA <- predict(GBMe1_USA,newx=c(1:60))
 plot.Dimora(GBMe1_USA)
+
 # GBM with mixed shocks shocks for USA #
 GBM_mix_USA<- GBM(Production$USA, shock = "mixed", nshock = 2, 
-                         prelimestimates = c(BM_USA$Estimate[1,1],
-                                             BM_USA$Estimate[2,1],
-                                             BM_USA$Estimate[3,1],
-                                             6,-0.1,0.1, 20,30,0.1))
-summary(GBM_mix_USA)
-GBM_USA_fitted<- fitted(GBM_mix_USA)
-coef(GBM_mix_USA)
-
-predictedGBM_mix_USA<- predict(GBM_mix_USA,newx = c(1:60))
-plot(GBM_mix_USA, type = "all")
-pred.instGBM_USA<- make.instantaneous(predictedGBM_mix_USA)
+                         prelimestimates = c(3.212495e+05,
+                                             1.441450e-02,
+                                             3.512072e-02,
+                                             44,0.05,0.1,10,0.1,-0.1)) #44,0.05,0.1,10,0.1,-0.1
+summary(GBM_mix_USA) # in summary gozashte shavad
+plot.Dimora(GBM_mix_USA) #in plot gozashte shavad
 
 ####residual analysis of GBM for USA #
-resGBM_USA<- residuals(GBM_mix_USA)
-plot(resGBM_USA, type="b")
-Acf(resGBM_USA)
-Pacf(resGBM_USA)
-
-### we fit a GGM (better model...but we need to interpret well the parameters)
-
-GGM_USA<- GGM(Production$USA, prelimestimates=c(1.947320e+06, 0.001, 0.01, 2.825896e-03, -8.256157e-04))
-summary(GGM_USA)
-sum(production_usa)
-pred_GGMUSA<- predict(GGM_USA, newx=c(1:60))
-pred.instGGMUSA<- make.instantaneous(pred_GGMUSA)
-
-plot(Production$USA, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$USA[c(1,10,20,30,40,51,61)])
-lines(pred.instGGMUSA, lwd=2, col=2)
-
+resGBM_mix_USA<- residuals(GBM_mix_USA)
+Acf(resGBM_mix_USA) #in plot gozashte shavad
+Pacf(resGBM_mix_USA) #in plot gozashte shavad
 
 #---------------------Bass standard model on SAUDI ARABIA to get the coefficients-------------------#
 
 # LIKE THE LAB SESSIONS#
 # Estimating a simple bass model #
-production_sau
 BM_SAU <- BM(Production$SAU, display=T)
 summary(BM_SAU)
 coef(BM_SAU)
 
-###prediction (out-of-sample)
-pred_bmsau<- predict(BM_SAU, newx=c(1:60))
-pred.instsau<- make.instantaneous(pred_bmsau)
 
-###plot of fitted model 
-plot(Production$SAU, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$SAU[c(1,10,20,30,40,51,61)])
-lines(pred.instsau, lwd=2, col=2)
-
-predicted_BM_SAU <- predict(BM_SAU,newx=c(1:60))
-plot(BM_SAU)
-pred.instBM_SAU<- make.instantaneous(predicted_BM_SAU)
+###plot of model 
 plot.Dimora(BM_SAU)
-BM_SAU_fitted<- fitted(BM_SAU)
-
-###we estimate the model with 50% of the data
-bm_sau50<-BM(Production$SAU[1:31],display = T)
-summary(bm_sau50)
-
-pred_bmsau50<- predict(bm_sau50, newx=c(1:50))
-pred.instsau50<- make.instantaneous(pred_bmsau50)
-
-plot(Production$SAU, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$SAU[c(1,10,20,30,40,51,61)])
-lines(pred.instsau50, lwd=2, col=2)
-
-###we estimate the model with 25% of the data
-bm_sau75<-BM(Production$SAU[1:15],display = T)
-summary(bm_sau75)
-
-pred_bmsau75<- predict(bm_sau75, newx=c(1:50))
-pred.instsau75<- make.instantaneous(pred_bmsau75)
-
-###Comparison between models (instantaneous)
-###instantaneous
-plot(Production$SAU, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$SAU[c(1,10,20,30,40,51,61)])
-lines(pred.instsau75, lwd=2, col=2)
-lines(pred.instsau50, lwd=2, col=3)
-lines(pred.instsau, lwd=2, col=4)
 
 # GBM with 1 exponantial shock #
 GBMe1_SAU<- GBM(Production$SAU,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$SAU, display=FALSE)$Estimate[1,1],
                                                                             BM(Production$SAU, display=FALSE)$Estimate[2,1],
                                                                             BM(Production$SAU, display=FALSE)$Estimate[3,1],
-                                                                            17,-0.1,0.1))
+                                                                            15,0.1,-0.05))
 summary(GBMe1_SAU)
-coef(GBMe1_SAU)
-predicted_BMe1_SAU <- predict(GBMe1_SAU,newx=c(1:60))
 plot.Dimora(GBMe1_SAU)
 # GBM with mixed shocks shocks for SAUDI ARABIA #
 GBM_mix_SAU<- GBM(Production$SAU, shock = "mixed", nshock = 2, 
-                  prelimestimates = c(BM_SAU$Estimate[1,1],
-                                      BM_SAU$Estimate[2,1],
-                                      BM_SAU$Estimate[3,1],
-                                      6,-0.1,0.1, 20,30,0.1))
+                  prelimestimates = c(4.854750e+05,
+                                      1.386853e-03,
+                                      1.295628e-01,
+                                      15,-0.1,0.1,4,0.05,0.1)) #15,-0.1,0.1,4,0.05,0.1 - #17,-0.1,0.1,5,-0.05,0.1 #35,-0.1,0.1,15,0.5,0.05
 summary(GBM_mix_SAU)
-GBM_SAU_fitted<- fitted(GBM_mix_SAU)
-coef(GBM_mix_SAU)
-
-predictedGBM_mix_SAU<- predict(GBM_mix_SAU,newx = c(1:60))
-plot(GBM_mix_SAU, type = "all")
-pred.instGBM_SAU<- make.instantaneous(predictedGBM_mix_SAU)
+plot.Dimora(GBM_mix_SAU)
 
 ####residual analysis of GBM for SAUDI ARABIA #
 resGBM_SAU<- residuals(GBM_mix_SAU)
-plot(resGBM_SAU, type="b")
 Acf(resGBM_SAU)
 Pacf(resGBM_SAU)
 
@@ -1202,7 +1099,6 @@ USA_arima010 <- Arima(USA_ts[,1], order = c(0,1,0))
 USA_resid010 <- residuals(USA_arima010)
 tsdisplay(USA_resid010)
 summary(USA_arima010)
-fitted(USA_arima010)
 plot(USA_ts[,1])
 lines(fitted(USA_arima010), col=2)
 # adding 1  AR #
@@ -1210,7 +1106,6 @@ USA_arima110 <- Arima(USA_ts[,1], order = c(1,1,0))
 USA_resid110 <- residuals(USA_arima110)
 tsdisplay(USA_resid110)
 summary(USA_arima110)
-fitted(USA_arima110)
 plot(USA_ts[,1])
 lines(fitted(USA_arima110), col=2)
 # adding 1 MA #
@@ -1218,23 +1113,80 @@ USA_arima111 <- Arima(USA_ts[,1], order = c(1,1,1))
 USA_resid111 <- residuals(USA_arima111)
 tsdisplay(USA_resid111)
 summary(USA_arima111)
-fitted(USA_arima111)
 plot(USA_ts[,1])
 lines(fitted(USA_arima111), col=2)
 # adding 2 AR #
-USA_arima211 <- Arima(USA_ts[,1], order = c(2,1,0))
+USA_arima211 <- Arima(USA_ts[,1], order = c(2,1,1))
 USA_resid211 <- residuals(USA_arima211)
 tsdisplay(USA_resid211)
 summary(USA_arima211)
-fitted(USA_arima211)
 plot(USA_ts[,1])
 lines(fitted(USA_arima211), col=2)
-AIC(USA_arima1)
-AIC(USA_arima2)
-AIC(USA_arima3)
-AIC(USA_arima4)
+# adding 2 MA #
+USA_arima112 <- Arima(USA_ts[,1], order = c(1,1,2))
+USA_resid112 <- residuals(USA_arima112)
+tsdisplay(USA_resid112)
+summary(USA_arima112)
+plot(USA_ts[,1])
+lines(fitted(USA_arima112), col=2)
+# adding 2 AR #
+USA_arima212 <- Arima(USA_ts[,1], order = c(2,1,2))
+USA_resid212 <- residuals(USA_arima212)
+tsdisplay(USA_resid212)
+summary(USA_arima212)
+plot(USA_ts[,1])
+lines(fitted(USA_arima212), col=2)
+# adding 3 MA #
+USA_arima113 <- Arima(USA_ts[,1], order = c(1,1,3))
+USA_resid113 <- residuals(USA_arima113)
+tsdisplay(USA_resid113)
+summary(USA_arima113)
+plot(USA_ts[,1])
+lines(fitted(USA_arima113), col=2)
+# adding 2 AR #
+USA_arima213 <- Arima(USA_ts[,1], order = c(2,1,3)) #BEST
+USA_resid213 <- residuals(USA_arima213)
+tsdisplay(USA_resid213)
+summary(USA_arima213)
+plot(USA_ts[,1])
+lines(fitted(USA_arima213), col=2)
+# adding 3 AR #
+USA_arima313 <- Arima(USA_ts[,1], order = c(3,1,3))
+USA_resid313 <- residuals(USA_arima313)
+tsdisplay(USA_resid313)
+summary(USA_arima313)
+plot(USA_ts[,1])
+lines(fitted(USA_arima313), col=2)
+# adding 4 MA #
+USA_arima214 <- Arima(USA_ts[,1], order = c(2,1,4))
+USA_resid214 <- residuals(USA_arima214)
+tsdisplay(USA_resid214)
+summary(USA_arima214)
+plot(USA_ts[,1])
+lines(fitted(USA_arima214), col=2)
+# adding 3 MA #
+USA_arima314 <- Arima(USA_ts[,1], order = c(3,1,4))
+USA_resid314 <- residuals(USA_arima314)
+tsdisplay(USA_resid314)
+summary(USA_arima314)
+plot(USA_ts[,1])
+lines(fitted(USA_arima314), col=2)
+#Comparing the AICs
+AIC(USA_arima010)
+AIC(USA_arima110)
+AIC(USA_arima111)
+AIC(USA_arima211)
+AIC(USA_arima112)
+AIC(USA_arima212)
+AIC(USA_arima113)
+AIC(USA_arima213)
+AIC(USA_arima313)
+AIC(USA_arima214)
+AIC(USA_arima314)
+
+
 # FORECASTING WITH BEST MODEL #
-fore_arima_USA <- forecast(USA_arima3)
+fore_arima_USA <- forecast(USA_arima213)
 plot(fore_arima_USA)
 forecast(fore_arima_USA)
 checkresiduals(fore_arima_USA)
@@ -1255,44 +1207,84 @@ production <- SAU_ts[,1]
 plot(production)
 Acf(production)
 Pacf(production)
-# trying 1 differentation #
-SAU_arima1 <- Arima(SAU_ts[,1], order = c(0,1,0)) #BEST
-SAU_resid1 <- residuals(SAU_arima1)
-tsdisplay(SAU_resid1)
-summary(SAU_arima1)
-fitted(SAU_arima1)
+# trying 1 differentiation #
+SAU_arima010 <- Arima(SAU_ts[,1], order = c(0,1,0)) 
+SAU_resid010 <- residuals(SAU_arima010)
+tsdisplay(SAU_resid010)
+summary(SAU_arima010)
 plot(SAU_ts[,1])
-lines(fitted(SAU_arima1), col=2)
+lines(fitted(SAU_arima010), col=2)
 # adding 1  AR #
-SAU_arima2 <- Arima(SAU_ts[,1], order = c(1,1,0))
-SAU_resid2 <- residuals(SAU_arima2)
-tsdisplay(SAU_resid2)
-summary(SAU_arima2)
-fitted(SAU_arima2)
+SAU_arima110 <- Arima(SAU_ts[,1], order = c(1,1,0)) 
+SAU_resid110 <- residuals(SAU_arima110)
+tsdisplay(SAU_resid110)
+summary(SAU_arima110)
 plot(SAU_ts[,1])
-lines(fitted(SAU_arima2), col=2)
+lines(fitted(SAU_arima110), col=2)
 # adding 1 MA #
-SAU_arima3 <- Arima(SAU_ts[,1], order = c(0,1,1)) 
-SAU_resid3 <- residuals(SAU_arima3)
-tsdisplay(SAU_resid3)
-summary(SAU_arima3)
-fitted(SAU_arima3)
+SAU_arima111 <- Arima(SAU_ts[,1], order = c(1,1,1))
+SAU_resid111 <- residuals(SAU_arima111)
+tsdisplay(SAU_resid111)
+summary(USA_arima111)
 plot(SAU_ts[,1])
-lines(fitted(SAU_arima3), col=2)
-# adding 1 AR and 1 MA #
-SAU_arima4 <- Arima(SAU_ts[,1], order = c(1,1,1)) 
-SAU_resid4 <- residuals(SAU_arima4)
-tsdisplay(SAU_resid4)
-summary(SAU_arima4)
-fitted(SAU_arima4)
+lines(fitted(SAU_arima111), col=2)
+# adding 2 AR #
+SAU_arima211 <- Arima(SAU_ts[,1], order = c(2,1,1))
+SAU_resid211 <- residuals(SAU_arima211)
+tsdisplay(SAU_resid211)
+summary(SAU_arima211)
 plot(SAU_ts[,1])
-lines(fitted(SAU_arima4), col=2)
-AIC(SAU_arima1)
-AIC(SAU_arima2)
-AIC(SAU_arima3)
-AIC(SAU_arima4)
+lines(fitted(SAU_arima211), col=2)
+# adding 2 MA #
+SAU_arima112 <- Arima(SAU_ts[,1], order = c(1,1,2))
+SAU_resid112 <- residuals(SAU_arima112)
+tsdisplay(SAU_resid112)
+summary(SAU_arima112)
+plot(SAU_ts[,1])
+lines(fitted(SAU_arima112), col=2)
+# adding 2 AR #
+SAU_arima212 <- Arima(SAU_ts[,1], order = c(2,1,2))
+SAU_resid212 <- residuals(SAU_arima212)
+tsdisplay(SAU_resid212)
+summary(SAU_arima212)
+plot(SAU_ts[,1])
+lines(fitted(SAU_arima212), col=2)
+# adding 3 MA #
+SAU_arima113 <- Arima(SAU_ts[,1], order = c(1,1,3))
+SAU_resid113 <- residuals(SAU_arima113)
+tsdisplay(SAU_resid113)
+summary(SAU_arima113)
+plot(SAU_ts[,1])
+lines(fitted(SAU_arima113), col=2)
+# adding 2 AR #
+SAU_arima213 <- Arima(SAU_ts[,1], order = c(2,1,3))
+SAU_resid213 <- residuals(SAU_arima213)
+tsdisplay(SA_resid213)
+summary(SA_arima213)
+plot(SA_ts[,1])
+lines(fitted(SA_arima213), col=2)
+# adding 3 AR #
+SAU_arima313 <- Arima(SAU_ts[,1], order = c(3,1,3))
+SAU_resid313 <- residuals(SAU_arima313)
+tsdisplay(SAU_resid313)
+summary(SAU_arima313)
+plot(SAU_ts[,1])
+lines(fitted(SAU_arima313), col=2)
+
+#Comparing the AICs
+AIC(SAU_arima010)
+AIC(SAU_arima110)
+AIC(SAU_arima111)
+AIC(SAU_arima211)
+AIC(SAU_arima112)
+AIC(SAU_arima212)
+AIC(SAU_arima113)
+AIC(SAU_arima213)
+AIC(SAU_arima313)
+
+
 # FORECASTING WITH BEST MODEL #
-fore_arima_SAU <- forecast(SAU_arima1)
+fore_arima_SAU <- forecast(SAU_arima010)
 plot(fore_arima_SAU)
 forecast(fore_arima_SAU)
 checkresiduals(fore_arima_SAU)
@@ -1312,44 +1304,83 @@ production <- IRN_ts[,1]
 plot(production)
 Acf(production)
 Pacf(production)
-# trying 1 differentation #
-IRN_arima1 <- Arima(IRN_ts[,1], order = c(0,1,0)) 
-IRN_resid1 <- residuals(IRN_arima1)
-tsdisplay(IRN_resid1)
-summary(IRN_arima1)
-fitted(IRN_arima1)
+# trying 1 differentiation #
+IRN_arima010 <- Arima(IRN_ts[,1], order = c(0,1,0)) 
+IRN_resid010 <- residuals(IRN_arima010)
+tsdisplay(IRN_resid010)
+summary(IRN_arima010)
 plot(IRN_ts[,1])
-lines(fitted(IRN_arima1), col=2)
+lines(fitted(IRN_arima010), col=2)
 # adding 1  AR #
-IRN_arima2 <- Arima(IRN_ts[,1], order = c(1,1,0)) 
-IRN_resid2 <- residuals(IRN_arima2)
-tsdisplay(IRN_resid2)
-summary(IRN_arima2)
-fitted(IRN_arima2)
+IRN_arima110 <- Arima(IRN_ts[,1], order = c(1,1,0))
+IRN_resid110 <- residuals(IRN_arima110)
+tsdisplay(IRN_resid110)
+summary(IRN_arima110)
 plot(IRN_ts[,1])
-lines(fitted(IRN_arima2), col=2)
+lines(fitted(IRN_arima110), col=2)
 # adding 1 MA #
-IRN_arima3 <- Arima(IRN_ts[,1], order = c(0,1,1)) #BEST 
-IRN_resid3 <- residuals(IRN_arima3)
-tsdisplay(IRN_resid3)
-summary(IRN_arima3)
-fitted(IRN_arima3)
+IRN_arima111 <- Arima(IRN_ts[,1], order = c(1,1,1))
+IRN_resid111 <- residuals(IRN_arima111)
+tsdisplay(IRN_resid111)
+summary(IRN_arima111)
 plot(IRN_ts[,1])
-lines(fitted(IRN_arima3), col=2)
-# adding 1 AR and 1 MA #
-IRN_arima4 <- Arima(IRN_ts[,1], order = c(1,1,1)) 
-IRN_resid4 <- residuals(IRN_arima4)
-tsdisplay(IRN_resid4)
-summary(IRN_arima4)
-fitted(IRN_arima4)
+lines(fitted(IRN_arima111), col=2)
+# adding 2 AR #
+IRN_arima211 <- Arima(IRN_ts[,1], order = c(2,1,1))
+IRN_resid211 <- residuals(IRN_arima211)
+tsdisplay(IRN_resid211)
+summary(IRN_arima211)
 plot(IRN_ts[,1])
-lines(fitted(IRN_arima4), col=2)
-AIC(USA_arima1)
-AIC(USA_arima2)
-AIC(USA_arima3)
-AIC(USA_arima4)
+lines(fitted(IRN_arima211), col=2)
+# adding 2 MA #
+IRN_arima112 <- Arima(IRN_ts[,1], order = c(1,1,2))
+IRN_resid112 <- residuals(IRN_arima112)
+tsdisplay(IRN_resid112)
+summary(IRN_arima112)
+plot(IRN_ts[,1])
+lines(fitted(IRN_arima112), col=2)
+# adding 2 AR #
+IRN_arima212 <- Arima(IRN_ts[,1], order = c(2,1,2))
+IRN_resid212 <- residuals(IRN_arima212)
+tsdisplay(IRN_resid212)
+summary(IRN_arima212)
+plot(IRN_ts[,1])
+lines(fitted(IRN_arima212), col=2)
+# adding 3 MA #
+IRN_arima113 <- Arima(IRN_ts[,1], order = c(1,1,3))
+IRN_resid113 <- residuals(IRN_arima113)
+tsdisplay(IRN_resid113)
+summary(IRN_arima113)
+plot(IRN_ts[,1])
+lines(fitted(IRN_arima113), col=2)
+# adding 2 AR #
+IRN_arima213 <- Arima(IRN_ts[,1], order = c(2,1,3))
+IRN_resid213 <- residuals(IRN_arima213)
+tsdisplay(IRN_resid213)
+summary(IRN_arima213)
+plot(IRN_ts[,1])
+lines(fitted(IRN_arima213), col=2)
+# adding 4 MA #
+IRN_arima214 <- Arima(IRN_ts[,1], order = c(2,1,4))
+IRN_resid214 <- residuals(IRN_arima214)
+tsdisplay(IRN_resid214)
+summary(IRN_arima214)
+plot(IRN_ts[,1])
+lines(fitted(IRN_arima214), col=2)
+#Comparing the AICs
+AIC(IRN_arima010)
+AIC(IRN_arima110)
+AIC(IRN_arima111)
+AIC(IRN_arima211)
+AIC(IRN_arima112)
+AIC(IRN_arima212)
+AIC(IRN_arima113)
+AIC(IRN_arima213)
+AIC(IRN_arima214)
+
+
 # FORECASTING WITH BEST MODEL #
-fore_arima_IRN <- forecast(IRN_arima3)
+fore_arima_IRN <- forecast(IRN_arima111)
 plot(fore_arima_IRN)
 forecast(fore_arima_IRN)
 checkresiduals(fore_arima_IRN)
@@ -1363,8 +1394,9 @@ forecast(IRN_auto_arima)
 plot(forecast(IRN_auto_arima))
 checkresiduals(IRN_auto_arima)
 summary(IRN_auto_arima)
-#-----------------------------------------------GAM------------------------------------------------#
-#------------GAM FOR USA------------#
+
+#-----------------------------------------------GAM---------------------------------------------#
+#---------------------GAM FOR USA----------------------#
 # simple GAM #
 simple_usa_gam <- gam(production~gdp + consumption + reserves, data=train_usa)
 summary(simple_usa_gam)
