@@ -318,7 +318,7 @@ autoplot(USA_ts[,1], series = 'United States', lwd = 1.2) +
            color = '#6F1D1B')+
   geom_hline(yintercept = 5178.294, linetype = 'longdash', color = '#000080')+
   annotate('text', x = 1962, y = 5200, label = 'Avg. Value for United States:\n5178.294', size = 3, color = '#000080')+
-  annotate('text', x = 2000, y = 2800, label = '2008 - Lowest crude\noil value for United States (3514.844)', size = 3, fontface = 'italic', 
+  annotate('text', x = 1997, y = 2800, label = '2008 - Lowest crude\noil value for United States (3514.844) and from this year\nCrude Oil production starts to increase until the year 2014.', size = 3, fontface = 'italic', 
            color = '#000080')+
   annotate(geom = 'curve', x = 2008, y = 3514.844, xend = 2000, yend = 3000, curvature = 0.1, arrow = arrow(length = unit(0.5, 'cm')),
            color = '#000080')+
@@ -351,10 +351,6 @@ annotate('text', x = 2020, y = 4380, label = 'Avg. Value for Saudi Arabia:\n4361
         axis.line = element_line(), legend.text = element_text(size = 10),
         legend.title = element_text(colour = 'gray5', size = 14, face = 'bold'),
         legend.background = element_rect(fill = '#EDE0D4', linetype = 'blank'))
-
-
-
-
 
 #####################
 ####Correlations#####
