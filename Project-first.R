@@ -930,12 +930,10 @@ plot.Dimora(BM_USA)
 
 # GBM with 1 exponantial shock #
 GBMe1_USA<- GBM(Production$USA,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$USA, display=FALSE)$Estimate[1,1],
-                                                              BM(Production$USA, display=FALSE)$Estimate[2,1],
-                                                              BM(Production$USA, display=FALSE)$Estimate[3,1],
-                                                              10,0.1,0.1))
+                                                                            BM(Production$USA, display=FALSE)$Estimate[2,1],
+                                                                            BM(Production$USA, display=FALSE)$Estimate[3,1],
+                                                                            10,0.1,0.1))
 summary(GBMe1_USA)
-coef(GBMe1_USA)
-predicted_BMe1_USA <- predict(GBMe1_USA,newx=c(1:60))
 plot.Dimora(GBMe1_USA)
 
 # GBM with mixed shocks shocks for USA #
@@ -977,116 +975,55 @@ GBM_mix_SAU<- GBM(Production$SAU, shock = "mixed", nshock = 2,
                                       1.386853e-03,
                                       1.295628e-01,
                                       15,-0.1,0.1,4,0.05,0.1)) #15,-0.1,0.1,4,0.05,0.1 - #17,-0.1,0.1,5,-0.05,0.1 #35,-0.1,0.1,15,0.5,0.05
-summary(GBM_mix_SAU)
-plot.Dimora(GBM_mix_SAU)
+summary(GBM_mix_SAU) # in summary gozashte shavad
+plot.Dimora(GBM_mix_SAU) # in plot gozashte shavad
 
 ####residual analysis of GBM for SAUDI ARABIA #
 resGBM_SAU<- residuals(GBM_mix_SAU)
-Acf(resGBM_SAU)
-Pacf(resGBM_SAU)
+Acf(resGBM_SAU) # in plot gozashte shavad
+Pacf(resGBM_SAU) # in plot gozashte shavad
 
 ### we fit a GGM (better model...but we need to interpret well the parameters)
-coef(BM_SAU)
-GGM_SAU<- GGM(Production$SAU, prelimestimates=c(5.221162e+05, 0.001, 0.01, 3.507965e-03, 3.875671e-02))
+GGM_SAU<- GGM(Production$SAU, prelimestimates=c(4.854750e+05, 0.001, 0.01, 1.386853e-03, 1.295628e-01))
 summary(GGM_SAU)
-sum(Production$SAU)
-pred_GGMSAU<- predict(GGM_SAU, newx=c(1:60))
-pred.instGGMSAU<- make.instantaneous(pred_GGMSAU)
-
-plot(Production$SAU, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$SAU[c(1,10,20,30,40,51,61)])
-lines(pred.instGGMSAU, lwd=2, col=2)
+plot.Dimora(GGM_SAU)
 
 #---------------------Bass standard model on IRAN to get the coefficients-------------------#
 
 # LIKE THE LAB SESSIONS#
 # Estimating a simple bass model #
-production_irn
 BM_IRN <- BM(Production$IRN, display=T)
 summary(BM_IRN)
-coef(BM_IRN)
-
-###prediction (out-of-sample)
-pred_bmirn<- predict(BM_IRN, newx=c(1:60))
-pred.instirn<- make.instantaneous(pred_bmirn)
-
-###plot of fitted model 
-plot(Production$IRN, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$IRN[c(1,10,20,30,40,51,61)])
-lines(pred.instirn, lwd=2, col=2)
-
-predicted_BM_IRN <- predict(BM_IRN,newx=c(1:60))
-plot(BM_IRN)
-pred.instBM_IRN<- make.instantaneous(predicted_BM_IRN)
 plot.Dimora(BM_IRN)
-BM_IRN_fitted<- fitted(BM_IRN)
-
-###we estimate the model with 50% of the data
-bm_irn50<-BM(Production$IRN[1:31],display = T)
-summary(bm_irn50)
-
-pred_bmirn50<- predict(bm_irn50, newx=c(1:50))
-pred.instirn50<- make.instantaneous(pred_bmirn50)
-
-plot(Production$IRN, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$IRN[c(1,10,20,30,40,51,61)])
-lines(pred.instirn50, lwd=2, col=2)
-
-###we estimate the model with 25% of the data
-bm_irn75<-BM(Production$IRN[1:15],display = T)
-summary(bm_irn75)
-
-pred_bmirn75<- predict(bm_irn75, newx=c(1:50))
-pred.instirn75<- make.instantaneous(pred_bmirn75)
-
-###Comparison between models (instantaneous)
-###instantaneous
-plot(Production$IRN, type= "b",xlab="Year", ylab="Annual Oil production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$IRN[c(1,10,20,30,40,51,61)])
-lines(pred.instirn75, lwd=2, col=2)
-lines(pred.instirn50, lwd=2, col=3)
-lines(pred.instirn, lwd=2, col=4)
 
 # GBM with 1 exponantial shock #
 GBMe1_IRN<- GBM(Production$IRN,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$IRN, display=FALSE)$Estimate[1,1],
                                                                             BM(Production$IRN, display=FALSE)$Estimate[2,1],
                                                                             BM(Production$IRN, display=FALSE)$Estimate[3,1],
-                                                                            17,-0.1,0.1))
+                                                                            9,0.08,-0.09))
 summary(GBMe1_IRN)
-coef(GBMe1_IRN)
-predicted_BMe1_IRN <- predict(GBMe1_IRN,newx=c(1:60))
 plot.Dimora(GBMe1_IRN)
 # GBM with mixed shocks shocks for IRAN #
-GBM_mix_IRN<- GBM(Production$IRN, shock = "mixed", nshock = 2, 
-                  prelimestimates = c(BM_IRN$Estimate[1,1],
-                                      BM_IRN$Estimate[2,1],
-                                      BM_IRN$Estimate[3,1],
-                                      6,-0.1,0.1, 20,30,0.1))
+GBM_mix_IRN<- GBM(Production$IRN, shock = "mixed", nshock = 2, prelimestimates = c(1.534326e+05,
+                                                                                   3.706325e-03,
+                                                                                   1.404754e-01,
+                                                                                   5,0.1,-0.1,30,0.1,0.1)) #12,0.1,-0.1,20,0.1,-0.1 #9,-0.05,-0.1,30,-0.05,-0.1 #5,0.1,-0.1,30,0.1,0.1
 summary(GBM_mix_IRN)
-GBM_IRN_fitted<- fitted(GBM_mix_IRN)
-coef(GBM_mix_IRN)
+plot.Dimora(GBM_mix_IRN)
 
-predictedGBM_mix_IRN<- predict(GBM_mix_IRN,newx = c(1:60))
-plot(GBM_mix_IRN, type = "all")
-pred.instGBM_IRN<- make.instantaneous(predictedGBM_mix_IRN)
+pred_GBMmixIRN<- predict(GBM_mix_IRN, newx=c(1:80))
+pred.instGBMmixIRN<- make.instantaneous(pred_GBMmixIRN)
+
+par(mfrow=c(1,1))
+plot(Production$IRN, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
+axis(1, at=c(1,10,20,30,40,51,61), labels=Years$IRN[c(1,10,20,30,40,51,61)])
+lines(pred.instGBMmixIRN, lwd=2, col=2)
 
 ####residual analysis of GBM for IRAN #
 resGBM_IRN<- residuals(GBM_mix_IRN)
 plot(resGBM_IRN, type="b")
 Acf(resGBM_IRN)
 Pacf(resGBM_IRN)
-
-### we fit a GGM (better model...but we need to interpret well the parameters)
-
-GGM_IRN<- GGM(Production$IRN, prelimestimates=c(3.835947e+05, 0.001, 0.01, 4.126620e-03, 1.465717e-02))
-summary(GGM_IRN)
-sum(Production$IRN)
-pred_GGMIRN<- predict(GGM_IRN, newx=c(1:60))
-pred.instGGMIRN<- make.instantaneous(pred_GGMIRN)
-
-plot(Production$IRN, type= "b",xlab="Year", ylab="Annual oil Production",  pch=16, lty=3, xaxt="n", cex=0.6)
-axis(1, at=c(1,10,20,30,40,51,61), labels=Years$IRN[c(1,10,20,30,40,51,61)])
-lines(pred.instGGMIRN, lwd=2, col=2)
 
 #----------------------------------------ARIMA Models-------------------------------------------#
 #-------------------ARIMA on USA----------------------#
@@ -1299,6 +1236,7 @@ plot(forecast(SAU_auto_arima))
 checkresiduals(SAU_auto_arima)
 summary(SAU_auto_arima)
 
+
 #-------------------ARIMA on IRAN----------------------#
 production <- IRN_ts[,1]
 plot(production)
@@ -1397,14 +1335,14 @@ summary(IRN_auto_arima)
 
 #-----------------------------------------------GAM---------------------------------------------#
 #---------------------GAM FOR USA----------------------#
-# simple GAM #
+# Simple Linear model #
 simple_usa_gam <- gam(production~gdp + consumption + reserves, data=train_usa)
 summary(simple_usa_gam)
 par(mfrow=c(2,2))
 plot(simple_usa_gam, se=T)
 AIC(simple_usa_gam)
 
-# 2nd GAM with smoothing splines applied to all the variables #
+# GAM with smoothing splines applied to all the variables #
 ss_usa_gam <- gam(production~ s(gdp) + s(consumption) + s(reserves), data=train_usa)
 summary(ss_usa_gam)
 par(mfrow=c(2,2))
@@ -1450,6 +1388,7 @@ ggplot() +
   geom_line(data=s_usa_gam_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = s_usa.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
   geom_line(data = s_usa.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
+
 #------------GAM FOR SAUDI ARABIA------------#
 # simple GAM #
 simple_sau_gam <- gam(production~gdp + consumption + reserves, data=train_sau)
@@ -1472,8 +1411,8 @@ par(mfrow=c(2,2))
 plot(lo_sau_gam, se=T)
 AIC(lo_sau_gam)
 
-#  GAM with loess applied to gdp variable #
-s_sau_gam <- gam(production~ s(gdp) + consumption + reserves, data=train_sau) #BEST
+#  GAM with spline applied only gdp variable and consumption removed #
+s_sau_gam <- gam(production~ s(gdp) + reserves, data=train_sau) #BEST
 summary(s_sau_gam)
 par(mfrow=c(2,2))
 plot(s_sau_gam, se=T)
@@ -1504,6 +1443,7 @@ ggplot() +
   geom_line(data=s_sau_gam_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = s_sau.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
   geom_line(data = s_sau.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
+
 #------------GAM FOR IRAN------------#
 # simple GAM #
 simple_irn_gam <- gam(production~gdp + consumption + reserves, data=train_irn)
@@ -1520,14 +1460,14 @@ plot(ss_irn_gam, se=T)
 AIC(ss_irn_gam)
 
 # 3rd GAM with loess applied to all the variable #
-lo_irn_gam <- gam(production~ gdp + consumption + lo(reserves), data=train_irn)
+lo_irn_gam <- gam(production~ lo(gdp) + lo(consumption) + lo(reserves), data=train_irn)
 summary(lo_irn_gam)
 par(mfrow=c(2,2))
 plot(lo_irn_gam, se=T)
 AIC(lo_irn_gam)
 
-#  GAM with splines applied to  variable #
-s_irn_gam <- gam(production~ gdp + consumption + lo(reserves), data=train_irn) 
+#  GAM with splines applied to reserves variable without reserves #
+s_irn_gam <- gam(production~ gdp + s(consumption), data=train_irn) 
 summary(s_irn_gam)
 par(mfrow=c(2,2))
 plot(s_irn_gam, se=T)
@@ -1558,5 +1498,4 @@ ggplot() +
   geom_line(data=s_irn_gam_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = s_irn.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
   geom_line(data = s_irn.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
-
 
