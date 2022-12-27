@@ -1,3 +1,4 @@
+#Importing required Libraries#
 library(dplyr)
 library(tidyverse)
 library(lattice)
@@ -17,7 +18,7 @@ library(splines)
 library(foreach)
 library(gam)
 
-#---Importing the Complete Data sets---#
+#---Importing the Complete Data set---#
 
 data <- read.csv("oil data2.csv", sep=";")
 colnames(data)[2] <- "country_code"
@@ -262,7 +263,6 @@ IRN
 min(IRN$years)
 typeof(IRN)
 IRN_ts <- ts(IRN[-5],start = min(IRN$years),end=max(IRN$years))
-
 # checking on NAn value #
 cat("NAs in Production:",sum(is.na(IRN$production)), 
     "\nNAs in GDP:",sum(is.na(IRN$gdp)),
@@ -274,6 +274,10 @@ cat("NAs in Production:",sum(is.na(IRN$production)),
 IRN = IRN[complete.cases(IRN),]
 row.names(IRN) <- NULL #reset the index
 head(IRN)
+max(IRN_ts[,1])
+min(USA_ts[,1])
+min(SAU_ts[,1])
+
 # Plotting time series for Iran #
 options(repr.plot.width=8, repr.plot.height=7)
 par(mfrow=c(1,3))
@@ -293,6 +297,64 @@ ggplot(norm.IRN, aes(x=IRN$years))+
   scale_color_discrete(name = "Features", labels = c(
     "#CD5C5C"="production", "#4B0082"="gdp", "#000080"="consumption", "#7FFF00"="reserves"))+
   ggtitle("Features after Normalization")
+
+
+############ A plot including all the things together ##########
+autoplot(USA_ts[,1], series = 'United States', lwd = 1.2) +
+  autolayer(SAU_ts[,1], series = 'Saudi Arabia', lwd = 1.2)+
+  autolayer(IRN_ts[,1], series = 'Iran', lwd = 1.2)+
+  scale_color_manual(values = c('#6F1D1B', '#DBB42C', '#000080'))+
+  labs(title = 'Crude Oil Production Plot', x = '\nYear', y = 'Value\n', 
+       subtitle = 'in United States, Saudi Arabia and Iran')+
+  geom_hline(yintercept = 2009.201, linetype = 'longdash', color = '#6F1D1B')+
+  annotate('text', x = 1960, y = 2000, label = 'Avg. Value for Iran:\n2009.201', size = 3, color = '#6F1D1B')+
+  annotate('text', x = 1970, y = 600, label = '1960 - Lowest crude oil value for Iran\n(622.1003)', size = 3, fontface = 'italic', 
+           color = '#6F1D1B')+
+  annotate(geom = 'curve', x = 1970, y = 600, xend = 1961, yend = 600, curvature = -0.1, arrow = arrow(length = unit(0.5, 'cm')),
+           color = '#6F1D1B')+
+  annotate('text', x = 1965, y = 3000, label = '1974 - Highest crude\noil value for Iran (3526.183)', size = 3, fontface = 'italic', 
+           color = '#6F1D1B')+
+  annotate(geom = 'curve', x = 1974, y = 3570, xend = 1965, yend = 3250, curvature = 0.3, arrow = arrow(length = unit(0.5, 'cm')),
+           color = '#6F1D1B')+
+  geom_hline(yintercept = 5178.294, linetype = 'longdash', color = '#000080')+
+  annotate('text', x = 1962, y = 5200, label = 'Avg. Value for United States:\n5178.294', size = 3, color = '#000080')+
+  annotate('text', x = 2000, y = 2800, label = '2008 - Lowest crude\noil value for United States (3514.844)', size = 3, fontface = 'italic', 
+           color = '#000080')+
+  annotate(geom = 'curve', x = 2008, y = 3514.844, xend = 2000, yend = 3000, curvature = 0.1, arrow = arrow(length = unit(0.5, 'cm')),
+           color = '#000080')+
+  annotate('text', x = 2010, y = 8300, label = '2019 - Highest crude\noil value for United States (8721.28)', size = 3, fontface = 'italic', 
+          color = '#000080')+
+  annotate(geom = 'curve', x = 2019, y = 8760, xend = 2010, yend = 8500, curvature = 0.2, arrow = arrow(length = unit(0.5, 'cm')),
+     color = '#000080')+
+  annotate('text', x = 1985, y = 6810, label = 'From 1985 the Oil production value in USA\ncontinues to decrease for the next 22 years until the year 2007 to reach\nUSAs lowest value.', size = 3, fontface = 'italic', 
+           color = '#000080')+
+  annotate(geom = 'curve', x = 1985, y = 5850, xend = 1985, yend = 6500, curvature = 0.2, arrow = arrow(length = unit(0.5, 'cm')),
+           color = '#000080')+
+ geom_hline(yintercept = 4361.518, linetype = 'longdash', color = '#DBB42C')+
+annotate('text', x = 2020, y = 4380, label = 'Avg. Value for Saudi Arabia:\n4361.518', size = 3, color = '#DBB42C')+
+  annotate('text', x = 1960, y = 1300, label = '1960 - Lowest crude\noil value for Saudi Arabia (750.4141)', size = 2.7, fontface = 'italic', 
+           color = '#DBB42C')+
+ annotate('text', x = 2005, y = 7300, label = '2016- Highest crude\noil value for Saudi Arabia (6823.463)', size = 3, fontface = 'italic', 
+ color = '#DBB42C')+
+  annotate(geom = 'curve', x = 2016, y = 6850, xend = 2005, yend = 6990, curvature = -0.2, arrow = arrow(length = unit(0.5, 'cm')),
+           color = '#DBB42C')+
+  theme(panel.background = element_rect(fill = '#EDE0D4', colour = '#EDE0D4'),
+        plot.background = element_rect(fill = '#EDE0D4', colour = '#EDE0D4'),
+        plot.title = element_text(size = 22, colour = 'gray15', face = 'bold', hjust = 0.5, vjust = 0.5),
+        plot.subtitle = element_text(size = 14, colour = 'gray15', face = 'italic', hjust = 0.5, vjust = 0.5),
+        plot.caption = element_text(color = 'gray25', face = 'italic', size = 12),
+        panel.grid.major.y = element_line(linetype = 'dotted', colour = 'gray70'),
+        panel.grid.minor.y = element_line(linetype = 'dotted', colour = 'gray75'),
+        panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),  
+        axis.title = element_text(size = 14, face = 'bold', colour = 'gray15'),
+        axis.text = element_text(size = 12, colour = 'gray8'), legend.position = 'bottom',
+        axis.line = element_line(), legend.text = element_text(size = 10),
+        legend.title = element_text(colour = 'gray5', size = 14, face = 'bold'),
+        legend.background = element_rect(fill = '#EDE0D4', linetype = 'blank'))
+
+
+
+
 
 #####################
 ####Correlations#####
@@ -1499,3 +1561,4 @@ ggplot() +
   geom_line(data = s_irn.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
   geom_line(data = s_irn.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
 
+#The End#
