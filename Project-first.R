@@ -1,5 +1,6 @@
 #Importing required Libraries#
 library(dplyr)
+library(cran)
 library(tidyverse)
 library(lattice)
 library(caret)
@@ -164,7 +165,7 @@ ggplot(Reserves[c(21:61),], aes(x=Years))+
   scale_color_discrete(name = "Countries")+
   ylab("Reserves")+
   ggtitle("Total reserves of each country by 2020")
-
+#-------------------------------------DATA PREPARATION------------------------------------------#
 #---Making dataframe for selected countries---#
 # USA #
 production <- Production$USA
@@ -190,12 +191,22 @@ USA = USA[complete.cases(USA),]
 #complete.cases() function in R Language is used to return a logical vector with cases which are complete, i.e., no missing value
 row.names(USA) <- NULL #reset the index
 head(USA)
+USA
+Production$USA
+USA$production
+Year$USA
 # Plotting time series for USA #
 options(repr.plot.width=8, repr.plot.height=7)
 par(mfrow=c(1,3))
 plot(USA_ts)
 # Checking on the ACF of USA #
-acf(USA[-5], na.action=na.pass)
+options(repr.plot.width=10, repr.plot.height=10)
+par(mfrow=c(2,2))
+acf(USA$production)
+acf(USA$consumption)
+acf(USA$gdp)
+acf(USA$reserves)
+
 # Plottig all the variables of the USA dataset #
 options(repr.plot.width=25, repr.plot.height=6)
 norm.USA <- cbind.data.frame(scale(USA[-5]), USA$years)
@@ -228,7 +239,6 @@ cat("NAs in Production:",sum(is.na(SAU$production)),
     "\nNAs in Reserves:", sum(is.na(SAU$reserves)),
     "\nNAs in years:", sum(is.na(SAU$years)))
 
-
 SAU = SAU[complete.cases(SAU),]
 row.names(SAU) <- NULL #reset the index
 head(SAU)
@@ -237,7 +247,11 @@ options(repr.plot.width=8, repr.plot.height=7)
 par(mfrow=c(1,3))
 plot(SAU_ts)
 # Checking on the ACF of Saudi Arabia #
-acf(SAU[-5], na.action=na.pass)
+par(mfrow=c(2,2))
+acf(SAU$production)
+acf(SAU$consumption)
+acf(SAU$gdp)
+acf(SAU$reserves)
 # Plottig all the variables of the Saudi Arabia dataset #
 par(mfrow=c(1,1))
 options(repr.plot.width=25, repr.plot.height=6)
@@ -260,8 +274,14 @@ gdp <- GDP$IRN
 years <- Production$Years
 IRN <- cbind.data.frame(production, consumption, reserves, gdp, years)
 IRN
-min(IRN$years)
-typeof(IRN)
+
+# filling the years 1991 and 1992 of gdp with average of the years 1990 and 1993
+IRN$gdp[c(32,33)] = c(94278460000, 94278460000)
+# filling the year 2021 of gdp with value of 2020
+IRN$gdp[c(62)] = c(231547600000)
+# filling the year 2021 of reserve with value of 2020
+IRN$reserves[c(62)] = c(21523920416)
+
 IRN_ts <- ts(IRN[-5],start = min(IRN$years),end=max(IRN$years))
 # checking on NAn value #
 cat("NAs in Production:",sum(is.na(IRN$production)), 
@@ -274,16 +294,18 @@ cat("NAs in Production:",sum(is.na(IRN$production)),
 IRN = IRN[complete.cases(IRN),]
 row.names(IRN) <- NULL #reset the index
 head(IRN)
-max(IRN_ts[,1])
-min(USA_ts[,1])
-min(SAU_ts[,1])
+IRN_ts
 
 # Plotting time series for Iran #
 options(repr.plot.width=8, repr.plot.height=7)
 par(mfrow=c(1,3))
 plot(IRN_ts)
 # Checking on the ACF of Iran #
-acf(IRN[-5], na.action=na.pass)
+par(mfrow=c(2,2))
+acf(IRN$production)
+acf(IRN$consumption)
+acf(IRN$gdp)
+acf(IRN$reserves)
 # Plottig all the variables of the Iran dataset #
 par(mfrow=c(1,1))
 options(repr.plot.width=25, repr.plot.height=6)
@@ -300,10 +322,10 @@ ggplot(norm.IRN, aes(x=IRN$years))+
 
 
 ############ A plot including all the things together ##########
-autoplot(USA_ts[,1], series = 'United States', lwd = 1.2) +
-  autolayer(SAU_ts[,1], series = 'Saudi Arabia', lwd = 1.2)+
-  autolayer(IRN_ts[,1], series = 'Iran', lwd = 1.2)+
-  scale_color_manual(values = c('#6F1D1B', '#DBB42C', '#000080'))+
+autoplot(USA_ts[,1], series = 'United States', lwd = 0.7) +
+  autolayer(SAU_ts[,1], series = 'Saudi Arabia', lwd = 0.7)+
+  autolayer(IRN_ts[,1], series = 'Iran', lwd = 0.7)+
+  scale_color_manual(values = c('#6F1D1B', '#CD5C5C', '#000080'))+
   labs(title = 'Crude Oil Production Plot', x = '\nYear', y = 'Value\n', 
        subtitle = 'in United States, Saudi Arabia and Iran')+
   geom_hline(yintercept = 2009.201, linetype = 'longdash', color = '#6F1D1B')+
@@ -330,14 +352,14 @@ autoplot(USA_ts[,1], series = 'United States', lwd = 1.2) +
            color = '#000080')+
   annotate(geom = 'curve', x = 1985, y = 5850, xend = 1985, yend = 6500, curvature = 0.2, arrow = arrow(length = unit(0.5, 'cm')),
            color = '#000080')+
- geom_hline(yintercept = 4361.518, linetype = 'longdash', color = '#DBB42C')+
-annotate('text', x = 2020, y = 4380, label = 'Avg. Value for Saudi Arabia:\n4361.518', size = 3, color = '#DBB42C')+
+ geom_hline(yintercept = 4361.518, linetype = 'longdash', color = '#CD5C5C')+
+annotate('text', x = 2020, y = 4380, label = 'Avg. Value for Saudi Arabia:\n4361.518', size = 3, color = '#CD5C5C')+
   annotate('text', x = 1960, y = 1300, label = '1960 - Lowest crude\noil value for Saudi Arabia (750.4141)', size = 2.7, fontface = 'italic', 
-           color = '#DBB42C')+
+           color = '#CD5C5C')+
  annotate('text', x = 2005, y = 7300, label = '2016- Highest crude\noil value for Saudi Arabia (6823.463)', size = 3, fontface = 'italic', 
- color = '#DBB42C')+
+ color = '#CD5C5C')+
   annotate(geom = 'curve', x = 2016, y = 6850, xend = 2005, yend = 6990, curvature = -0.2, arrow = arrow(length = unit(0.5, 'cm')),
-           color = '#DBB42C')+
+           color = '#CD5C5C')+
   theme(panel.background = element_rect(fill = '#EDE0D4', colour = '#EDE0D4'),
         plot.background = element_rect(fill = '#EDE0D4', colour = '#EDE0D4'),
         plot.title = element_text(size = 22, colour = 'gray15', face = 'bold', hjust = 0.5, vjust = 0.5),
@@ -387,13 +409,13 @@ corrplot(corr_IRN, method="color", col=col(200),
 set.seed(1)
 
 train_usa <- USA %>% filter(USA$years >= min(USA$years) & USA$years<=2008)
-test_usa <- USA %>% filter(USA$years >= 2008 )
+test_usa <- USA %>% filter(USA$years >= 2008)
 
-train_sau <- SAU %>% filter(SAU$years >= min(SAU$years) & SAU$years<=2008)
-test_sau <- SAU %>% filter(SAU$years >= 2008 )
+train_sau <- SAU %>% filter(SAU$years >= min(SAU$years) & SAU$years<=2016)
+test_sau <- SAU %>% filter(SAU$years >= 2016)
 
-train_irn <- IRN %>% filter(IRN$years >= min(IRN$years) & IRN$years<=2008)
-test_irn <- IRN %>% filter(IRN$years >= 2008 )
+train_irn <- IRN %>% filter(IRN$years >= min(IRN$years) & IRN$years<=2016)
+test_irn <- IRN %>% filter(IRN$years >= 2016 )
 
 #----------------------------------Modelling and the Analysis--------------------------------------#
 
@@ -404,7 +426,7 @@ test_irn <- IRN %>% filter(IRN$years >= 2008 )
 #---------Linear Regression model for USA-------#
 
 #Fitting linear model using only with the highest correlated variable with the target column#
-MLR_USA_res <- tslm(production ~reserves, data=window(USA_ts, start=1980, end=2009 -.1))
+MLR_USA_res <- tslm(production ~reserves, data=window(USA_ts, start=1980, end=2018 -.1))
 summary(MLR_USA_res)
 # On train set of USA #
 LM1_USA_res <- lm(production~reserves, data=train_usa)
@@ -415,7 +437,7 @@ summary(LM2_USA_res)
 AIC(MLR_USA_res)
 AIC(LM1_USA_res)
 AIC(LM2_USA_res)
-
+accuracy(LM2_USA_res, test_usa)
 fit_LM_USA_res <- fitted.values(LM2_USA_res)
 # Plotting the Fitted and Real values #
 options(repr.plot.width=25, repr.plot.height=6)
@@ -426,6 +448,7 @@ ggplot(usa_fit, aes(x=years))+
   geom_line(aes(y=fitted, color="Fitted"),na.rm = TRUE)
 # Predicting of test set #
 usa_pred <- predict(LM2_USA_res, test_usa)
+summary(usa_pred)
 usa_pred <- cbind.data.frame(test_usa$production, usa_pred, test_usa$years)
 colnames(usa_pred) <- c("production", "pred", "years")
 # Plotting everything together #
@@ -551,7 +574,7 @@ anova(LM_USA_gdp2, LM_USA_gdp_multi)
 ######## <- <- <- <- <- <- <- <- <- ##########
 
 #Fitting linear model using all the variable with their best degree of polynomial#
-MLR_USA_full <- tslm(production ~ consumption + poly(gdp,2) + reserves, data=window(USA_ts, start=1980, end=2009 -.1))
+MLR_USA_full <- tslm(production ~ consumption + poly(gdp,2) + reserves, data=window(USA_ts, start=1980, end=2018 -.1))
 summary(MLR_USA_full)
 # On train set of USA #
 LM_USA_full <- lm(production~consumption + poly(gdp,2) + reserves, data=train_usa)
@@ -581,7 +604,7 @@ ggplot() +
   geom_line(data=usa_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = usa_pred, aes(x=years, y=production, color='Actual'), na.rm=TRUE) +
   geom_line(data = usa_pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE) +
-  labs(title = "Actual, fitted and predicted values for UNITED STATES")
+  labs(title = "Actual, fitted and predicted values for UNITED STATES with full model")
 
 # Useful plots #
 par(mfrow=c(2,2))
@@ -628,7 +651,7 @@ ggplot() +
   geom_line(data=sau_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = sau_pred, aes(x=years, y=production, color='Actual'), na.rm=TRUE) +
   geom_line(data = sau_pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE) +
-  labs(title = "Actual, fitted and predicted values for SAUDI ARABIA")
+  labs(title = "Actual, fitted and predicted values for SAUDI ARABIA contatining only gdp")
 
 par(mfrow=c(2,2))
 plot(LM2_SAU_gdp)
@@ -768,7 +791,7 @@ ggplot() +
   geom_line(data=sau_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = sau_pred, aes(x=years, y=production, color='Actual'), na.rm=TRUE) +
   geom_line(data = sau_pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE) +
-  labs(title = "Actual, fitted and predicted values for SAUDI ARABIA")
+  labs(title = "Actual, fitted and predicted values for SAUDI ARABIA with full model")
 
 # Useful plots #
 par(mfrow=c(2,2))
@@ -785,28 +808,28 @@ dw
 
 #-----------------Linear Regression model for IRAN -----------#
 #Fitting linear model using only with the highest correlated variable with the target column#
-MLR_IRN_gdp <- tslm(formula = production ~ consumption, data=window(IRN_ts, start=1980, end=2009 -.1))
-summary(MLR_IRN_gdp)
+MLR_IRN_cons <- tslm(formula = production ~ consumption, data=window(IRN_ts, start=1980, end=2009 -.1))
+summary(MLR_IRN_cons)
 # Linear Model On train set of IRAN #
-LM1_IRN_gdp <- lm(formula= production ~ consumption, data=train_irn)
-summary(LM1_IRN_gdp)
+LM1_IRN_cons <- lm(formula= production ~ consumption, data=train_irn)
+summary(LM1_IRN_cons)
 # Stepwise Regression
-LM2_IRN_gdp <- step(LM1_IRN_gdp, direction="both")
-summary(LM2_IRN_gdp)
-AIC(MLR_IRN_gdp)
-AIC(LM1_IRN_gdp)
-AIC(LM2_IRN_gdp)
+LM2_IRN_cons <- step(LM1_IRN_cons, direction="both")
+summary(LM2_IRN_cons)
+AIC(MLR_IRN_cons)
+AIC(LM1_IRN_cons)
+AIC(LM2_IRN_cons)
 
-fit_LM_IRN_gdp <- fitted.values(LM2_IRN_gdp)
+fit_LM_IRN_cons <- fitted.values(LM2_IRN_cons)
 # Plotting the Fitted and Real values #
 options(repr.plot.width=25, repr.plot.height=6)
-irn_fit <- cbind.data.frame(train_irn$production,fit_LM_IRN_gdp, train_irn$years)
+irn_fit <- cbind.data.frame(train_irn$production,fit_LM_IRN_cons, train_irn$years)
 colnames(irn_fit) <- c("production", "fitted","years")
 ggplot(irn_fit, aes(x=years))+
   geom_line(aes(y=production, color="Real"),na.rm = TRUE) +
   geom_line(aes(y=fitted, color="Fitted"),na.rm = TRUE)
 # Predicting of test set #
-irn_pred <- predict(LM2_IRN_gdp, test_irn)
+irn_pred <- predict(LM2_IRN_cons, test_irn)
 irn_pred <- cbind.data.frame(test_irn$production, irn_pred, test_irn$years)
 colnames(irn_pred) <- c("production", "pred", "years")
 # Plotting everything together #
@@ -815,18 +838,18 @@ ggplot() +
   geom_line(data=irn_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = irn_pred, aes(x=years, y=production, color='Actual'), na.rm=TRUE) +
   geom_line(data = irn_pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE) +
-  labs(title = "Actual, fitted and predicted values for IRAN")
+  labs(title = "Actual, fitted and predicted values for IRAN containing only consumption variable.")
 
 par(mfrow=c(2,2))
-plot(LM2_IRN_gdp)
+plot(LM2_IRN_cons)
 par(mfrow=c(1,1))
 
 #analysis of residuals
-residuals_irn_gdp<- residuals(LM2_IRN_gdp) 
-plot(residuals_irn_gdp, type = "b") 
+residuals_irn_cons<- residuals(LM2_IRN_cons) 
+plot(residuals_irn_cons, type = "b") 
 
-Acf(residuals_irn_gdp)
-dw<- dwtest(LM2_IRN_gdp, alt="two.sided")
+Acf(residuals_irn_cons)
+dw<- dwtest(LM2_IRN_cons, alt="two.sided")
 dw
 ###### <- <- Analysis on the degree polynomial of the variables <- <- <- <- <- ##############
 ############
@@ -959,7 +982,7 @@ ggplot() +
   geom_line(data=irn_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
   geom_line(data = irn_pred, aes(x=years, y=production, color='Actual'), na.rm=TRUE) +
   geom_line(data = irn_pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE) +
-  labs(title = "Actual, fitted and predicted values for IRAN")
+  labs(title = "Actual, fitted and predicted values for IRAN with chosen variables.")
 
 # Useful plots #
 par(mfrow=c(2,2))
@@ -981,18 +1004,55 @@ dw
 
 # LIKE THE LAB SESSIONS#
 # Estimating a simple bass model #
-BM_USA <- BM(Production$USA, display=T)
+BM_USA <- BM(USA$production)
 summary(BM_USA)
 coef(BM_USA)
-plot.Dimora(BM_USA)
+plot.Dimora(BM_USA, oos=25)
+residuals(BM_USA)
+par(mfrow=c(1,1))
+plot(residuals(BM_USA))
+BM.fitted<- fitted(BM_USA)
 
+predicted_usa = predict.Dimora(BM_USA, newx = c(1:62))
+predicted_usa
+plot(predicted_usa)
+
+pred_BM_USA<- predict(BM_USA, newx=c(1:62))
+pred.instBM_USA<- make.instantaneous(pred_BM_USA)
+
+plot(USA$production, type= "b",xlab="Year", ylab="Annual productiton",  pch=16, lty=3, xaxt="n", cex=0.6)
+axis(1, at=c(1,10,19,28,37,46, 55, 56), labels=USA$years[c(1,10,19,28,37,46, 55, 56)])
+lines(pred.instBM_USA, lwd=2, col=1)
+
+plot(USA$production, type="l",xaxt="n",xlab = "Year",ylab = "production")
+axis(1, at = seq(1,length(USA$production),1),labels = USA$year)
+lines(pred.instBM_USA, col=2)
+length(Production$USA)
+length(USA$years)
+USA
+
+Production$USA
+
+USA$production
+pred.instBM_USA
+####graphical inspection of BM e GBMe1
+BMS.fitted <- cbind.data.frame(pred_BM_USA, USA$years)
+colnames(BMS.fitted) <- c("bm", "years")
+# BMS.pred <- cbind.data.frame(predictedGBM, predictedBM, test$years)
+# colnames(BMS.pred) <- c("gbm", "bm", "years")
+
+ggplot()+
+  geom_line(data=train_usa, aes(x= years,y=production, color="Actual Train"))+
+  geom_line(data=BMS.fitted, aes(x=years,y=bm, color="BM"))
+#geom_line(data=BMS.pred, aes(x=years,y=bm, color="BM"))
 # GBM with 1 exponantial shock #
 GBMe1_USA<- GBM(Production$USA,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$USA, display=FALSE)$Estimate[1,1],
                                                                             BM(Production$USA, display=FALSE)$Estimate[2,1],
                                                                             BM(Production$USA, display=FALSE)$Estimate[3,1],
                                                                             10,0.1,0.1))
 summary(GBMe1_USA)
-plot.Dimora(GBMe1_USA)
+plot.Dimora(GBMe1_USA, oos= 5)
+predict.Dimora(GBMe1_USA, newx = c(1:62))
 
 # GBM with mixed shocks shocks for USA #
 GBM_mix_USA<- GBM(Production$USA, shock = "mixed", nshock = 2, 
@@ -1001,13 +1061,34 @@ GBM_mix_USA<- GBM(Production$USA, shock = "mixed", nshock = 2,
                                              3.512072e-02,
                                              44,0.05,0.1,10,0.1,-0.1)) #44,0.05,0.1,10,0.1,-0.1
 summary(GBM_mix_USA) # in summary gozashte shavad
-plot.Dimora(GBM_mix_USA) #in plot gozashte shavad
+plot.Dimora(GBM_mix_USA, oos=3) #in plot gozashte shavad
+
+predicted_usa = predict.Dimora(GBM_mix_USA, newx = c(1:62))
+predicted_usa
+plot(predicted_usa)
+GBM.fitted<- fitted(GBM_mix_USA)
+GBMS.fitted <- cbind.data.frame(GBM.fitted, USA$years)
+colnames(GBMS.fitted) <- c("bm", "years")
+# BMS.pred <- cbind.data.frame(predictedGBM, predictedBM, test$years)
+# colnames(BMS.pred) <- c("gbm", "bm", "years")
+
+ggplot()+
+  geom_line(data=train_usa, aes(x= years,y=production, color="Actual Train"))+
+  geom_line(data=test_usa, aes(x= years,y=production, color="Actual Test"))+
+  geom_line(data=GBMS.fitted, aes(x=years,y=bm, color="BM"))
+
 
 ####residual analysis of GBM for USA #
 resGBM_mix_USA<- residuals(GBM_mix_USA)
 Acf(resGBM_mix_USA) #in plot gozashte shavad
 Pacf(resGBM_mix_USA) #in plot gozashte shavad
 
+pred_GBM_mix_USA<- predict(GBM_mix_USA, newx=c(1:60))
+pred.instGBM_mix_USA<- make.instantaneous(pred_GBM_mix_USA)
+
+plot(Production$USA, type= "b",xlab="Year", ylab="Annual productiton",  pch=16, lty=3, xaxt="n", cex=0.6)
+axis(1, at=c(1,10,19,28,37), labels=USA$years)
+lines(pred.instGBM_mix_USA, lwd=2, col=1)
 #---------------------Bass standard model on SAUDI ARABIA to get the coefficients-------------------#
 
 # LIKE THE LAB SESSIONS#
@@ -1021,20 +1102,21 @@ coef(BM_SAU)
 plot.Dimora(BM_SAU)
 
 # GBM with 1 exponantial shock #
-GBMe1_SAU<- GBM(Production$SAU,shock = "exp",nshock = 1,prelimestimates = c(BM(Production$SAU, display=FALSE)$Estimate[1,1],
+GBMe1_SAU<- GBM(Production$SAU[1:57],shock = "exp",nshock = 1,prelimestimates = c(BM(Production$SAU, display=FALSE)$Estimate[1,1],
                                                                             BM(Production$SAU, display=FALSE)$Estimate[2,1],
                                                                             BM(Production$SAU, display=FALSE)$Estimate[3,1],
                                                                             15,0.1,-0.05))
 summary(GBMe1_SAU)
-plot.Dimora(GBMe1_SAU)
+Production$SAU[1:57]
+plot.Dimora(GBMe1_SAU, oos = 5)
 # GBM with mixed shocks shocks for SAUDI ARABIA #
 GBM_mix_SAU<- GBM(Production$SAU, shock = "mixed", nshock = 2, 
                   prelimestimates = c(4.854750e+05,
                                       1.386853e-03,
                                       1.295628e-01,
-                                      15,-0.1,0.1,4,0.05,0.1)) #15,-0.1,0.1,4,0.05,0.1 - #17,-0.1,0.1,5,-0.05,0.1 #35,-0.1,0.1,15,0.5,0.05
-summary(GBM_mix_SAU) # in summary gozashte shavad
-plot.Dimora(GBM_mix_SAU) # in plot gozashte shavad
+                                      21,0.1,-0.1,15,0.05,0.1),oos = round(length(Production$SAU)*0.25), display = T) #15,-0.1,0.1,4,0.05,0.1 - #17,-0.1,0.1,5,-0.05,0.1 #35,-0.1,0.1,15,0.5,0.05
+summary(GBM_mix_SAU) # in summary gozashte shavad.  #21,0.05,-0.1,15,0.05,0.1. #21,0.1,-0.1,15,0.05,0.1
+plot.Dimora(GBM_mix_SAU, oos = round(length(Production$SAU)*0.25)) # in plot gozashte shavad
 
 ####residual analysis of GBM for SAUDI ARABIA #
 resGBM_SAU<- residuals(GBM_mix_SAU)
@@ -1181,6 +1263,12 @@ AIC(USA_arima314)
 
 
 # FORECASTING WITH BEST MODEL #
+usa.fitt <- fitted(USA_arima213)
+usa.pro <- zoo(x=USA_ts[,1], order.by=index(usa.fitt))
+
+for_USA <- forecast(USA_arima213)
+plot(for_USA)
+lines(usa.fitt, col="red")
 fore_arima_USA <- forecast(USA_arima213)
 plot(fore_arima_USA)
 forecast(fore_arima_USA)
@@ -1279,10 +1367,16 @@ AIC(SAU_arima313)
 
 
 # FORECASTING WITH BEST MODEL #
+sau.fitt <- fitted(SAU_arima010)
+sau.pro <- zoo(x=SAU_ts[,1], order.by=index(sau.fitt))
+
+for_SAU <- forecast(SAU_arima010)
+plot(for_SAU)
+lines(sau.fitt, col="red")
 fore_arima_SAU <- forecast(SAU_arima010)
 plot(fore_arima_SAU)
 forecast(fore_arima_SAU)
-checkresiduals(fore_arima_SAU)
+checkresiduals(for_SAU)
 # using auto arima #
 SAU_auto_arima <- auto.arima(SAU_ts[,1])
 SAU_auto_resid <- residuals(SAU_auto_arima)
@@ -1376,7 +1470,13 @@ AIC(IRN_arima214)
 
 
 # FORECASTING WITH BEST MODEL #
-fore_arima_IRN <- forecast(IRN_arima111)
+irn.fitt <- fitted(IRN_arima113)
+irn.pro <- zoo(x=IRN_ts[,1], order.by=index(irn.fitt))
+
+for_IRN <- forecast(IRN_arima113)
+plot(for_IRN)
+lines(irn.fitt, col="red")
+fore_arima_IRN <- forecast(IRN_arima113)
 plot(fore_arima_IRN)
 forecast(fore_arima_IRN)
 checkresiduals(fore_arima_IRN)
@@ -1394,7 +1494,7 @@ summary(IRN_auto_arima)
 #-----------------------------------------------GAM---------------------------------------------#
 #---------------------GAM FOR USA----------------------#
 # Simple Linear model #
-simple_usa_gam <- gam(production~gdp + consumption + reserves, data=train_usa)
+simple_usa_gam <- gam(production~ consumption + gdp + reserves, data=train_usa)
 summary(simple_usa_gam)
 par(mfrow=c(2,2))
 plot(simple_usa_gam, se=T)
@@ -1414,40 +1514,40 @@ par(mfrow=c(2,2))
 plot(lo_usa_gam, se=T)
 AIC(lo_usa_gam)
 
-# 3rd GAM with splines applied only to reserves variable #
-s_usa_gam <- gam(production~ gdp + consumption + s(reserves), data=train_usa) #BEST
-summary(s_usa_gam)
+# 3rd GAM with splines applied only to reserves variable and loess applied only on gdp based on the Anova report #
+los_usa_gam <- gam(production~ lo(gdp) + consumption + s(reserves), data=train_usa) #BEST
+summary(los_usa_gam)
 par(mfrow=c(2,2))
-plot(s_usa_gam, se=T)
+plot(los_usa_gam, se=T)
 
 AIC(simple_usa_gam)
 AIC(ss_usa_gam)
 AIC(lo_usa_gam)
-AIC(s_usa_gam)
+AIC(los_usa_gam)
 
-anova(simple_usa_gam, s_usa_gam, test = "Chisq")
+anova(los_usa_gam, ss_usa_gam, test = "Chisq")
 
-tsdisplay(residuals(s_usa_gam))
-dwtest(s_usa_gam)
+tsdisplay(residuals(los_usa_gam))
+dwtest(los_usa_gam)
 
-s_usa_gam_fit <- fitted(s_usa_gam)
+los_usa_gam_fit <- fitted(los_usa_gam)
 plot(train_usa$production)
-lines(s_usa_gam_fit, col=2)
+lines(los_usa_gam_fit, col=2)
 
-s_usa_gam_fit <- cbind.data.frame(train_usa$production,s_usa_gam_fit, train_usa$years)
-colnames(s_usa_gam_fit) <- c("production", "fitted","years")
+los_usa_gam_fit <- cbind.data.frame(train_usa$production,los_usa_gam_fit, train_usa$years)
+colnames(los_usa_gam_fit) <- c("production", "fitted","years")
 
-s_usa.pred <- predict(s_usa_gam, test_usa)
-s_usa.pred <- cbind.data.frame(test_usa$production, s_usa.pred, test_usa$years)
-colnames(s_usa.pred) <- c("production", "pred", "years")
+los_usa.pred <- predict(los_usa_gam, test_usa)
+los_usa.pred <- cbind.data.frame(test_usa$production, los_usa.pred, test_usa$years)
+colnames(los_usa.pred) <- c("production", "pred", "years")
 
 ggplot() + 
-  geom_line(data=s_usa_gam_fit, aes(x=years, y=production, color='Actual Train'), na.rm=TRUE) +
-  geom_line(data=s_usa_gam_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
-  geom_line(data = s_usa.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
-  geom_line(data = s_usa.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
+  geom_line(data=los_usa_gam_fit, aes(x=years, y=production, color='Actual Train'), na.rm=TRUE) +
+  geom_line(data=los_usa_gam_fit, aes(x=years, y=fitted, color='Fitted'), na.rm=TRUE) +
+  geom_line(data = los_usa.pred, aes(x=years, y=production, color='Actual Test'), na.rm=TRUE) +
+  geom_line(data = los_usa.pred, aes(x=years, y=pred, color='Predicted'), na.rm=TRUE)
 
-#------------GAM FOR SAUDI ARABIA------------#
+#---------------------------GAM FOR SAUDI ARABIA------------#
 # simple GAM #
 simple_sau_gam <- gam(production~gdp + consumption + reserves, data=train_sau)
 summary(simple_sau_gam)
@@ -1469,8 +1569,8 @@ par(mfrow=c(2,2))
 plot(lo_sau_gam, se=T)
 AIC(lo_sau_gam)
 
-#  GAM with spline applied only gdp variable and consumption removed #
-s_sau_gam <- gam(production~ s(gdp) + reserves, data=train_sau) #BEST
+#  GAM with spline applied only gdp variable and consumption #
+s_sau_gam <- gam(production~ s(gdp) + s(consumption) + reserves, data=train_sau) #BEST
 summary(s_sau_gam)
 par(mfrow=c(2,2))
 plot(s_sau_gam, se=T)
@@ -1525,7 +1625,7 @@ plot(lo_irn_gam, se=T)
 AIC(lo_irn_gam)
 
 #  GAM with splines applied to reserves variable without reserves #
-s_irn_gam <- gam(production~ gdp + s(consumption), data=train_irn) 
+s_irn_gam <- gam(production~ gdp + s(consumption) + s(reserves), data=train_irn) 
 summary(s_irn_gam)
 par(mfrow=c(2,2))
 plot(s_irn_gam, se=T)
